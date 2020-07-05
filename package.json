@@ -1,0 +1,25 @@
+{
+  "name": "codify-int-node",
+  "version": "1.0.1",
+  "description": "The code for the following [SitePoint article](https://www.sitepoint.com/build-simple-beginner-app-node-bootstrap-mongodb/).",
+  "main": "index.js",
+  "scripts": {
+    "watch": "nodemon ./start.js",
+    "start": "nodemon ./start.js"
+  },
+  "keywords": [],
+  "author": "Suheal",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.4.0",
+    "http-auth": "^4.1.2",
+    "mongoose": "^5.9.21",
+    "pug": "^2.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
+}

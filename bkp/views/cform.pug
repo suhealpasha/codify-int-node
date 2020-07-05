@@ -1,0 +1,72 @@
+extends layout
+
+block content
+  -data = data || {}
+
+  if errors
+    ul.my-errors
+      for error in errors
+        li= error.msg
+
+  form(action="." method="POST" class="form-registration")
+    
+    label(for="clientid") ClientId:
+    input(
+      type="text"
+      id="clientid"
+      name="clientid"
+      class="form-control"
+      value=data.clientid
+    )
+    br
+    label(for="agenceyid") Agencey ID:
+    input(
+      type="text"
+      id="agenceyid"
+      name="agenceyid"
+      class="form-control"
+      value=data.agenceyid
+    )
+    br
+    label(for="name") Name:
+    input(
+      type="text"
+      id="name"
+      name="name"
+      class="form-control"
+      value=data.name
+    )
+    br
+    label(for="email") email:
+    input(
+      type="email"
+      id="email"
+      name="email"
+      class="form-control"
+      value=data.email
+    )
+    br
+    label(for="phone") phone:
+    input(
+      type="phone"
+      id="phone"
+      name="phone"
+      class="form-control"
+      value=data.phone
+    )
+
+    br 
+    label(for="totalbill") totalbill:
+    input(
+      type="totalbill"
+      id="totalbill"
+      name="totalbill"
+      class="form-control"
+      value=data.totalbill
+    )
+    br     
+    input(
+      type="submit"
+      value="Submit"
+      class="btn btn-lg btn-primary btn-block"
+    )

@@ -1,0 +1,79 @@
+extends layout
+
+block content
+  -data = data || {}
+
+  if errors
+    ul.my-errors
+      for error in errors
+        li= error.msg
+
+  form(action="/agencey" method="POST" class="form-registration")
+    label(for="name") Name:
+    input(
+      type="text"
+      id="name"
+      name="name"
+      class="form-control"
+      value=data.name
+    )
+    br
+    label(for="agenceyid") AgenceyId:
+    input(
+      type="text"
+      id="agenceyid"
+      name="agenceyid"
+      class="form-control"
+      value=data.agenceyid
+    )
+    br
+    label(for="address1") address1:
+    input(
+      type="address1"
+      id="address1"
+      name="address1"
+      class="form-control"
+      value=data.address1
+    )
+    br
+    label(for="address2") address2:
+    input(
+      type="address2"
+      id="address2"
+      name="address2"
+      class="form-control"
+      value=data.address2
+    )
+    br 
+    label(for="state") State:
+    input(
+      type="state"
+      id="state"
+      name="state"
+      class="form-control"
+      value=data.state
+    )
+    br 
+    label(for="city") City:
+    input(
+      type="city"
+      id="city"
+      name="city"
+      class="form-control"
+      value=data.city
+    )
+    br 
+    label(for="phone") Phone:
+    input(
+      type="phone"
+      id="phone"
+      name="phone"
+      class="form-control"
+      value=data.phone
+    )
+    br
+    input(
+      type="submit"
+      value="Submit"
+      class="btn btn-lg btn-primary btn-block"
+    )
