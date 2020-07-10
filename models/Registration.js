@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const registrationSchema = new mongoose.Schema({
   agenceyid: {
-    type: String,
+    type: Number,
     trim: true,
   },
   name: {

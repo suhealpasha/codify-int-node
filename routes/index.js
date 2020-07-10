@@ -2,6 +2,7 @@ const auth = require("http-auth");
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const {ObjectId} = require('mongodb'); 
 const { check, validationResult } = require("express-validator");
 
 const router = express.Router();
@@ -11,16 +12,10 @@ const basic = auth.basic({
   file: path.join(__dirname, "../users.htpasswd"),
 });
 
-router.get("/agencey", (req, res) => {
-  res.render("form", { title: "Registration form" });
-});
 
-router.get("/client", (req, res) => {
-  res.render("cform", { title: "Registration form" });
-});
 
 router.post(
-  "/agencey",
+  "/register/agencey",
   [
     check("name").isLength({ min: 1 }).withMessage("Please enter a name"),
     check("agenceyid")
@@ -35,36 +30,41 @@ router.post(
   ],
   (req, res) => {
     const errors = validationResult(req);
-
     if (errors.isEmpty()) {
       const registration = new Registration(req.body);
       registration
         .save()
         .then(() => {
-          res.send("Thank you for your registration!");
+          res.send({
+            status: 200,
+            data: req.body,
+            message: "Data inserted Sucessfully",
+          });
         })
         .catch((err) => {
           console.log(err);
           res.send("Sorry! Something went wrong.");
         });
     } else {
-      res.render("form", {
-        title: "Registration form",
+      res.send({
         errors: errors.array(),
         data: req.body,
+        message: "Missing Details",
       });
     }
   }
 );
 
 router.post(
-  "/client",
+  "/register/client",
   [
+    check("clientid")
+      .isLength({ min: 1 })
+      .withMessage("Please enter a Client Id"),
     check("name").isLength({ min: 1 }).withMessage("Please enter a name"),
     check("agenceyid")
       .isLength({ min: 1 })
       .withMessage("Please enter a agenceyid"),
-    check("name").isLength({ min: 1 }).withMessage("Please enter a name"),
     check("email").isLength({ min: 1 }).withMessage("Please enter a email"),
     check("phone").isLength({ min: 1 }).withMessage("Please enter a phone"),
     check("totalbill")
@@ -76,77 +76,89 @@ router.post(
     if (errors.isEmpty()) {
       const registration = new ClientRegistration(req.body);
       var myquery = { agenceyid: req.body.agenceyid };
-      Registration.updateOne(myquery, { $set: { clients: req.body } }).then(
-        (res) => {
-          console.log(res);
-        }
-      );
-
-      registration
-        .save()
-        .then(() => {
-          res.send("Thank you for your registration!");
+      Registration.findOne(myquery)
+        .then((data) => {
+          if (data !== null) {
+            Registration.updateOne(myquery, {
+              $set: { clients: req.body },
+            }).then(
+              registration.save().then(() => {
+                res.send({
+                  status: 200,
+                  data: req.body,
+                  message: "Data inserted Sucessfully",
+                });
+              })
+            );
+          } else {
+            res.send({ status: 403, message: "Agencey Id not available!" });
+          }
         })
         .catch((err) => {
           console.log(err);
-          res.send("Sorry! Something went wrong.");
         });
     } else {
-      res.render("cform", {
-        title: "Registration form",
+      res.send({
         errors: errors.array(),
         data: req.body,
+        message: "Missing Details",
       });
     }
   }
 );
 
-router.put("/updateclient",
-(req, res) => {
-const registration = new ClientRegistration(req.body);
-var newValues = req.body;
-var query = {clientid:req.body.clientid}
-ClientRegistration.updateOne(query,newValues)
-.then(res=>{res.send("Updated sucesfully")})
-.catch(err =>{console.log(err)})
-}
-)
 
-router.get("/topclients",
-(req,res)=>{
-  Registration.aggregate(
-    [  
-        {$unwind : "$clients"},
 
-        {
-          "$group" : {
-              "_id" : "$_id",  
-                      
-              "totalbill" : {"$max" : "$clients.totalbill"},             
-          },
-          
-      }
-       
-    ])
-  .then(res=>{
-    const maxPeak = res.reduce((p, c) => p.totalbill > c.totalbill ? p : c);
-    console.log(maxPeak)
-  })
-}
-)
 
-router.get(
-  "/registrations",
-  basic.check((req, res) => {
-    Registration.find()
-      .then((registrations) => {
-        res.render("index", { title: "Listing registrations", registrations });
+router.put("/updateclient", (req, res) => {
+  const registration = new ClientRegistration(req.body);
+  var newValues = req.body; 
+  var query = { clientid: req.body.clientid };
+  ClientRegistration.findOne(query)
+  .then(
+    data=>{
+      if(data){
+        ClientRegistration.updateOne(query, req.body, function (err, result) {
+          res.send(
+              (err === null) ? {"status":200,"data": req.body,"message":"updated Sucessfully"} : {msg: err}
+          )
       })
+    }
+      else{
+        res.send({"status":403,"message":"invalid Client Id","data":req.body})
+      }
+    }
+    )
+    
+}
+)
+router.get(
+  "/topclients",
+ (req, res) => {
+    let maxPeak;
+    Registration.aggregate([
+      { $unwind: "$clients" },
+
+      {
+        $group: {
+          _id: "$_id",          
+          totalbill: { $max: "$clients.totalbill" },
+        },
+      },
+    ])
+
+      .then((data) => {
+        let agName;
+        maxPeak = data.reduce((p, c) => (p.totalbill > c.totalbill ? p : c));                
+        res.send({"result":maxPeak,"Agencey Name":agName})       
+      })      
       .catch((err) => {
         console.log(err);
-        res.send("Sorry! Something went wrong.");
       });
-  })
+   
+  }
 );
+
+
 
 module.exports = router;
