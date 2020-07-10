@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "watch": "nodemon ./start.js",
-    "start-server": "node start.js",
-    "start": "nodemon node start.js"
+    "start-server": "node ./start.js",
+    "start": "nodemon node ./start.js"
   },
   "keywords": [],
   "author": "Suheal",
