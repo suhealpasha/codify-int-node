@@ -3,8 +3,7 @@
   "version": "1.0.1",
   "description": "The code for the following [SitePoint article](https://www.sitepoint.com/build-simple-beginner-app-node-bootstrap-mongodb/).",
   "main": "index.js",
-  "scripts": {
-    "watch": "nodemon ./start.js",
+  "scripts": {  
     "start-server": "node ./start.js",
     "start": "node ./start.js"
   },
